@@ -45,7 +45,7 @@ Create a ```*.sublime-project``` file - see http://www.sublimetext.com/docs/2/pr
 }  
 ```
 
-Open this file with Sublime Text 2 and from now on all files in your ```/path/to/your/project/root``` directory are automatically uploaded to ```yourwebdavhost.com/path/to/your/webdav/root``` each time you save it in Sublime Text2. If folders do not exist on the server, they will be created, before the file is uploaded there.
+Open this file with Sublime Text 2 and from now on all files in your ```/path/to/your/project/root``` directory are automatically uploaded to ```yourwebdavhost.com/path/to/your/webdav/root``` each time you save it there. If folders do not exist on the server, they will be created, before the file is uploaded there.
 
 **For example:**
 
