@@ -9,6 +9,7 @@ Installation
 **Manually:**
 
 Copy the content of this repository into a folder called ```WebDavSync``` in your Sublime Text 2 packages directory.
+(Open the menu Preferences/Browse Packages to determine the location of your packages directory)
 
 **Via Package Control:**
 
