@@ -1,6 +1,12 @@
-# DAV client library with automatic Basic or Digest Authorization
+# WebDAV client library with automatic Basic or Digest Authorization
 #
 # Copyright (C) 2014-2014 Rene Kretzschmar. All Rights Reserved.
+# 
+# The DAV part of this library is copied from davlib.py 
+# (Copyright (C) 1998-2000 Guido van Rossum. All Rights Reserved. Written by Greg Stein. 
+#	Given to Guido. Licensed using the Python license.)
+# 
+# The digest header build code is copied from auth.py - see https://github.com/kennethreitz/requests
 #
 #
 import httplib
