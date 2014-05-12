@@ -1,16 +1,18 @@
+import sys
+
+if sys.version_info[0] > 2:
+	from queue import Queue
+	from .webdav import WebDAV
+else:
+	from Queue import Queue
+	from webdav import WebDAV
+
 import sublime
 import sublime_plugin
 import threading
 import subprocess
-import sys
 import io
-#import davlib
-import webdav
 
-if sys.version_info[0] > 2:
-	from queue import Queue
-else:
-	from Queue import Queue
 
 work_count_lock = threading.RLock()
 work_count = 0
@@ -20,7 +22,7 @@ WebDavSyncWebDavs = {}
 def create_webdav_client(item):
 	d = WebDavSyncWebDavs[item["davkey"]] if item["davkey"] in WebDavSyncWebDavs else None
 	if d == None:
-		d = webdav.WebDAV(protocol=item["protocol"], host=item["host"], username=item["username"], password=item["password"])
+		d = WebDAV(protocol=item["protocol"], host=item["host"], username=item["username"], password=item["password"])
 		WebDavSyncWebDavs[item["davkey"]] = d
 
 
@@ -53,7 +55,6 @@ def WebDavSyncWorker():
 					uploadReady = False
 					# mkdirs
 					test_url = target_url[:target_url.rfind("/")]
-					print "target_folder: " + test_url
 					folders_to_create = []
 					retryCount = 0
 					while retryCount < 10:
@@ -66,7 +67,6 @@ def WebDavSyncWorker():
 							retryCount = 0
 							folders_to_create.append(test_url[test_url.rfind("/"):])
 							test_url = test_url[:test_url.rfind("/")]
-							print test_url
 
 					for folder in reversed(folders_to_create):
 						test_url = test_url + folder
@@ -82,7 +82,6 @@ def WebDavSyncWorker():
 					content = f.read()
 
 					response = d.put(target_url,content)
-					#print "Upload " + str(response.status) + ": " + source_path
 					d.close()								
 
 			# this task is ready		

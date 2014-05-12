@@ -8,8 +8,20 @@
 # 
 # The digest header build code is copied from auth.py - see https://github.com/kennethreitz/requests
 #
-#
-import httplib
+
+import sys
+
+if sys.version_info[0] > 2:
+	from queue import Queue
+	from http.client import HTTPSConnection
+	from http.client import HTTPConnection
+	from urllib.parse import urlparse
+else:
+	from httplib import HTTPSConnection
+	from httplib import HTTPConnection
+	from urlparse import urlparse
+	from Queue import Queue
+
 import urllib
 import string
 import types
@@ -20,7 +32,6 @@ import base64
 import re
 import time
 import os
-import urlparse
 
 
 BASIC_AUTH = "basic"
@@ -34,7 +45,7 @@ XML_CONTENT_TYPE = 'text/xml; charset="utf-8"'
 BLOCKSIZE = 16384
 
 
-class WebDAV(httplib.HTTPSConnection, object):
+class WebDAV(HTTPSConnection, object):
 	def __init__(self, protocol=None, host=None, username=None, password=None):
 
 		self.protocol = protocol
@@ -57,9 +68,9 @@ class WebDAV(httplib.HTTPSConnection, object):
 
 	def connect(self):
 		if self.protocol == "https":
-			httplib.HTTPSConnection.connect(self)
+			HTTPSConnection.connect(self)
 		else:
-			httplib.HTTPConnection.connect(self)
+			HTTPConnection.connect(self)
 
 	def get(self, url, extra_hdrs={ }):
 		return self._request('GET', url, extra_hdrs=extra_hdrs)
@@ -243,7 +254,7 @@ class WebDAV(httplib.HTTPSConnection, object):
 			return None
 
 		entdig = None
-		p_parsed = urlparse.urlparse(url)
+		p_parsed = urlparse(url)
 		path = p_parsed.path
 		if p_parsed.query:
 			path += '?' + p_parsed.query
