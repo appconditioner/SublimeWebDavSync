@@ -1,5 +1,5 @@
-SublimeWebDavSync
-=================
+Sublime Text 2 - WebDavSync
+===========================
 
 This is a small Sublime Text 2 plugin for syncing your sublime project directory with a directory on a WebDAV server. That could be useful for WebDAV-based hotdeploy environments.
 
