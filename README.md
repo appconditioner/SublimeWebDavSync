@@ -49,7 +49,7 @@ Open this file with Sublime Text 2 and from now on all files in your ```/path/to
 
 **For example:**
 
-1. The local root path ```/projectdir```
+1. The local root path is ```/projectdir```
 
 2. The local file ```/projectdir/static/js/app.js``` is saved
 
