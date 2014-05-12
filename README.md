@@ -12,7 +12,7 @@ Copy the content of this repository into a folder called ```WebDavSync``` in you
 
 **Via Package Control:**
 
-Find WebDavSync in the Package Control installer and install it.
+Find *WebDavSync* in the Package Control installer and install it.
 
 
 Setup
