@@ -59,3 +59,17 @@ Open this file with Sublime Text 2 and from now on all files in your local root 
 The resulting webdav resource path is ```https://yourwebdavhost.com/version1/static/js/app.js``` and the remote path ```/version1/static/js``` will be created if necessary.
 
 
+Features
+========
+
+1. Basic and Digest authentication
+2. Uploading files and creating folders
+
+Not Implemented
+===============
+
+1. Digest auth-int
+2. Deleting folders and files
+
+
+
