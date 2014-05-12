@@ -70,6 +70,7 @@ Not Implemented
 
 1. Digest auth-int
 2. Deleting folders and files
+3. Sublime Text 3 compatibility
 
 
 
