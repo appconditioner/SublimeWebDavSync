@@ -1,0 +1,25 @@
+[
+    {
+        "caption": "Tools",
+        "mnemonic": "t",
+        "id": "tools",
+        "children":
+        [
+            {
+                "caption": "WebDavSync",
+                "mnemonic": "w",
+                "id": "webdavsync",
+                "children":
+                [
+                    {
+                        "command": "open_file", "args":
+                                {
+                                    "file": "${packages}/WebDavSync/README.md"
+                                },
+                        "caption": "Readme"
+                    }
+                ]
+            }
+        ]
+    }
+]   
