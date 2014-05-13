@@ -46,7 +46,8 @@ def WebDavSyncWorker():
 
 				target_path = item["path"] + source_path[len(source_folder):]
 
-				target_url = "{0}://{1}{2}".format(item["protocol"], item["host"], target_path)
+				target_url = "{0}://{1}{2}".format(item["protocol"], item["host"], target_path).replace("\\","/")
+				target_url = target_url.replace
 
 				d = WebDavSyncWebDavs[item["davkey"]]
 
