@@ -12,7 +12,6 @@
 import sys
 
 if sys.version_info[0] > 2:
-	from queue import Queue
 	from http.client import HTTPSConnection
 	from http.client import HTTPConnection
 	from urllib.parse import urlparse
@@ -20,7 +19,6 @@ else:
 	from httplib import HTTPSConnection
 	from httplib import HTTPConnection
 	from urlparse import urlparse
-	from Queue import Queue
 
 import urllib
 import string
@@ -28,10 +26,11 @@ import types
 import mimetypes
 
 import hashlib
-import base64
 import re
 import time
 import os
+
+from base64 import b64encode
 
 
 BASIC_AUTH = "basic"
@@ -45,7 +44,7 @@ XML_CONTENT_TYPE = 'text/xml; charset="utf-8"'
 BLOCKSIZE = 16384
 
 
-class WebDAV(HTTPSConnection, object):
+class WebDAV(HTTPSConnection):
 	def __init__(self, protocol=None, host=None, username=None, password=None):
 
 		self.protocol = protocol
@@ -64,7 +63,7 @@ class WebDAV(HTTPSConnection, object):
 		self.opaque = None		
 		self.algorithm = None
 		self.last_nonce = None
-		super(WebDAV, self).__init__(host=host)
+		HTTPSConnection.__init__(self,host=host)
 
 	def connect(self):
 		if self.protocol == "https":
@@ -179,7 +178,7 @@ class WebDAV(HTTPSConnection, object):
 			# obtain the auth info
 			authInfo = None
 			for header in headers:
-				if header[0] == "www-authenticate":
+				if header[0].lower() == "www-authenticate":
 					authInfo = header[1]
 
 			if authInfo:
@@ -209,7 +208,7 @@ class WebDAV(HTTPSConnection, object):
 				elif BASIC_AUTH in authInfo.lower():
 					# Basic auth
 					self.auth = BASIC_AUTH
-					auth_token = base64.encodestring("%s:%s" %(self.username, self.password)).strip()
+					auth_token = b64encode(('%s:%s' % (self.username, self.password)).encode('latin1')).strip().decode('latin1')
 					self.basic_auth_header = "Basic %s" %auth_token
 					return None
 
@@ -305,6 +304,7 @@ class WebDAV(HTTPSConnection, object):
 
 	def _request(self, method, url, body=None, extra_hdrs={}):
 
+		print ("[WebDavSync] REQUEST: " + method + " " + url)
 		# TODO: this is a bit dirty
 		retryHeaderName = "AuthDAV-Retry"
 		retryHeader = retryHeaderName in extra_hdrs
@@ -316,9 +316,10 @@ class WebDAV(HTTPSConnection, object):
 			extra_hdrs['Authorization'] = self._authorization_header(method, url)
 
 		self.request(method, url, body, extra_hdrs)
-		resp = self._update_authorization_info(self.getresponse())
+		resp = self._update_authorization_info(self.getresponse())		
 
 		if resp:
+			print ("[WebDavSync] STATUS: %i" % resp.status)
 			return resp
 
 		if retryHeader == False:
