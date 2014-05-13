@@ -7,28 +7,41 @@ else:
 	from Queue import Queue
 	from webdav import WebDAV
 
+from threading import Thread
+from threading import RLock
+
 import sublime
 import sublime_plugin
-import threading
-import subprocess
-import io
 
 
-work_count_lock = threading.RLock()
+work_count_lock = RLock()
 work_count = 0
 
+# this is a map of all running webdav clients identified by user@host/path
+# (in case there are parallel sublime text projects open)
 WebDavSyncWebDavs = {}
 
+# this method takes a dict containing a "davkey" (user@host/path) and creates a new client
+# if there is nothing in the WebDavSyncWebDavs map for this davkey
 def create_webdav_client(item):
-	d = WebDavSyncWebDavs[item["davkey"]] if item["davkey"] in WebDavSyncWebDavs else None
-	if d == None:
-		d = WebDAV(protocol=item["protocol"], host=item["host"], username=item["username"], password=item["password"])
-		WebDavSyncWebDavs[item["davkey"]] = d
+	global WebDavSyncWebDavs
+	if not "davkey" in item:
+		return
+
+	if not item["davkey"] in WebDavSyncWebDavs:
+		WebDavSyncWebDavs[item["davkey"]] = WebDAV(protocol=item["protocol"], 
+			host=item["host"], username=item["username"], password=item["password"])
 
 
 WebDavSyncQueue = Queue()
 
 def WebDavSyncWorker():
+
+	global WebDavSyncQueue
+	global WebDavSyncWebDavs
+	global work_count_lock
+	global work_count
+
 	while True:
 		if WebDavSyncQueue != None:
 			item = WebDavSyncQueue.get()
@@ -100,14 +113,12 @@ def WebDavSyncWorker():
 			finally:
 				# this task is ready		
 				WebDavSyncQueue.task_done()
-				global work_count_lock
-				global work_count
 				with work_count_lock:
 					work_count = work_count - 1
 
 
-
-WebDavSyncDaemon = threading.Thread(target=WebDavSyncWorker)
+# this is the background deamon
+WebDavSyncDaemon = Thread(target=WebDavSyncWorker)
 WebDavSyncDaemon.daemon = True
 WebDavSyncDaemon.start()
 
@@ -130,6 +141,9 @@ class WebDavSync(sublime_plugin.EventListener):
 			view.set_status("WebDavSync","WebDavSync finished successfully")
 
 	def on_post_save(self, view):
+		global WebDavSyncQueue
+		global work_count_lock
+		global work_count
 
 		# check if there are webdav settings in the view (sublime-project file) - if not - return
 		if not view.settings().has("webdavsync"):
@@ -157,8 +171,6 @@ class WebDavSync(sublime_plugin.EventListener):
 		create_webdav_client(item)
 
 		if WebDavSyncQueue != None:
-			global work_count_lock
-			global work_count
 			with work_count_lock:
 				work_count = work_count + 1
 			WebDavSyncQueue.put(item,False)
