@@ -33,70 +33,78 @@ def WebDavSyncWorker():
 		if WebDavSyncQueue != None:
 			item = WebDavSyncQueue.get()
 
-			source_path = item["source_path"]
+			try:
+				source_path = item["source_path"]
 
-			source_folder = None
+				source_folder = None
 
-			for folder in item["folders"]:
-				if folder in source_path:
-					source_folder = folder
-					break
+				for folder in item["folders"]:
+					if folder in source_path:
+						source_folder = folder
+						break
 
-			if source_folder != None:
+				if source_folder != None:
 
-				target_path = item["path"] + source_path[len(source_folder):]
+					target_path = item["path"] + source_path[len(source_folder):]
 
-				target_url = "{0}://{1}{2}".format(item["protocol"], item["host"], target_path).replace("\\","/")
-				target_url = target_url.replace
+					target_url = "{0}://{1}{2}".format(item["protocol"], item["host"], target_path).replace("\\","/")
 
-				d = WebDavSyncWebDavs[item["davkey"]]
+					d = WebDavSyncWebDavs[item["davkey"]]
 
-				if d != None:
+					try:
+						if d != None:
 
-					uploadReady = False
-					# mkdirs
-					test_url = target_url[:target_url.rfind("/")]
-					folders_to_create = []
-					retryCount = 0
-					while retryCount < 10:
-						retryCount = retryCount + 1
-						body = '<?xml version="1.0" encoding="utf-8" ?>' \
-						'<D:propfind xmlns:D="DAV:">' + \
-						'<D:prop xmlns:R="%s">' % test_url + \
-						'</D:prop>' + \
-						'</D:propfind>'
-
-						result = d.propfind(test_url,depth=0, body=body)
-						result.read()
-						if result.status == 207:
-							break
-						elif result.status == 404:
+							# mkdirs
+							test_url = target_url[:target_url.rfind("/")]
+							folders_to_create = []
 							retryCount = 0
-							folders_to_create.append(test_url[test_url.rfind("/"):])
-							test_url = test_url[:test_url.rfind("/")]
+							while retryCount < 10:
+								retryCount = retryCount + 1
+								body = '<?xml version="1.0" encoding="utf-8" ?>' + \
+								'<D:propfind xmlns:D="DAV:">' + \
+								'<D:prop xmlns:R="%s">' % test_url + \
+								'</D:prop>' + \
+								'</D:propfind>'
 
-					for folder in reversed(folders_to_create):
-						test_url = test_url + folder
-						retryCount = 0
-						while retryCount < 10:							
-							retryCount = retryCount + 1
-							result = d.mkcol(test_url)
-							result.read()
-							if result.status == 201:
-								break
+								result = d.propfind(test_url,depth=0, body=body)
+								result.read()
+								if result.status == 207:
+									break
+								elif result.status == 404:
+									retryCount = 0
+									folders_to_create.append(test_url[test_url.rfind("/"):])
+									test_url = test_url[:test_url.rfind("/")]
 
-					f = open(source_path)
-					content = f.read()
+							for folder in reversed(folders_to_create):
+								test_url = test_url + folder
+								retryCount = 0
+								while retryCount < 10:							
+									retryCount = retryCount + 1
+									result = d.mkcol(test_url)
+									result.read()
+									if result.status == 201:
+										break
 
-					response = d.put(target_url,content)
-					d.close()								
+							f = open(source_path)
+							content = f.read()
 
-			# this task is ready		
-			WebDavSyncQueue.task_done()
-			global work_count_lock
-			global work_count
-			with work_count_lock:
-				work_count = work_count - 1
+							response = d.put(target_url,content)
+							d.close()								
+					except Exception, e:
+						print e
+					finally:
+						d.close()
+
+			except Exception, e:
+				print e
+			finally:
+				# this task is ready		
+				WebDavSyncQueue.task_done()
+				global work_count_lock
+				global work_count
+				with work_count_lock:
+					work_count = work_count - 1
+
 
 
 WebDavSyncDaemon = threading.Thread(target=WebDavSyncWorker)
