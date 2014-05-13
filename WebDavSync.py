@@ -59,7 +59,13 @@ def WebDavSyncWorker():
 					retryCount = 0
 					while retryCount < 10:
 						retryCount = retryCount + 1
-						result = d.propfind(test_url,depth=0)
+						body = '<?xml version="1.0" encoding="utf-8" ?>' \
+						'<D:propfind xmlns:D="DAV:">' + \
+						'<D:prop xmlns:R="%s">' % test_url + \
+						'</D:prop>' + \
+						'</D:propfind>'
+
+						result = d.propfind(test_url,depth=0, body=body)
 						result.read()
 						if result.status == 207:
 							break
@@ -71,7 +77,7 @@ def WebDavSyncWorker():
 					for folder in reversed(folders_to_create):
 						test_url = test_url + folder
 						retryCount = 0
-						while retryCount < 10:
+						while retryCount < 10:							
 							retryCount = retryCount + 1
 							result = d.mkcol(test_url)
 							result.read()
