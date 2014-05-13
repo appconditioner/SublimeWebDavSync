@@ -1,14 +1,14 @@
-Sublime Text 2 - WebDavSync
+Sublime Text - WebDavSync
 ===========================
 
-This is a small Sublime Text 2 plugin for syncing your sublime project directory with a directory on a WebDAV server. That could be useful for WebDAV-based hotdeploy environments.
+This is a small Sublime Text plugin for syncing your sublime project directory with a directory on a WebDAV server. That could be useful for WebDAV-based hotdeploy environments.
 
 Installation
 ============
 
 **Manually:**
 
-Copy the content of this repository into a folder called ```WebDavSync``` in your Sublime Text 2 packages directory.
+Copy the content of this repository into a folder called ```WebDavSync``` in your Sublime Text packages directory.
 (Open the menu */Preferences/Browse Packages* to determine the location of your packages directory)
 
 **Via Package Control:**
@@ -46,7 +46,7 @@ Create a ```*.sublime-project``` file (see http://www.sublimetext.com/docs/2/pro
 }  
 ```
 
-Open this file with Sublime Text 2 and from now on all files in your local root director(ies) are automatically uploaded to ```yourwebdavhost.com/path/to/your/webdav/root``` each time you save it there. If folders do not exist on the server, they will be created, before the file is uploaded there.
+Open this file with Sublime Text (*Project/Open Project*) and from now on all files in your local root director(ies) are automatically uploaded to ```yourwebdavhost.com/path/to/your/webdav/root``` each time you save it there. If folders do not exist on the server, they will be created, before the file is uploaded there.
 
 **For example:**
 
@@ -70,7 +70,6 @@ Not Implemented
 
 1. Digest auth-int
 2. Deleting folders and files
-3. Sublime Text 3 compatibility
 
 
 
