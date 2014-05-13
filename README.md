@@ -1,7 +1,7 @@
 Sublime Text - WebDavSync
 ===========================
 
-This is a small Sublime Text plugin for syncing your sublime project directory with a directory on a WebDAV server. That could be useful for WebDAV-based hotdeploy environments.
+This is a small Sublime Text plugin for syncing your sublime project directory with a directory on a WebDAV server. That could be useful for WebDAV-based hotdeploy environments. All WebDAV (network) activities are queued and done in an own background thread, so the UI keeps always responsive.
 
 Installation
 ============
