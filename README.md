@@ -20,7 +20,7 @@ Setup
 =====
 Create a ```*.sublime-project``` file (see http://www.sublimetext.com/docs/2/projects.html for further consultation) and add a ```webdavsync``` section to the settings.
 
-```JSON
+```
 {
     "folders":
     [
